@@ -16,7 +16,7 @@ class Simulator:
     def __init__(self, param: str, start: Dict[int, Tuple[int]], goal: Dict[int, Tuple[int]]):
         self.multi_planner = MultiAStar()
         self.multi_planner.naive_plan(start, goal)
-        self.padded_path = copy.deepcopy(self.multi_planner.naive_path)
+        self.padded_path = copy.deepcopy(self.multi_planner.planning(start, goal))
         self.pad_path()
 
         dirname = os.path.abspath(__file__ + "/..")
@@ -30,9 +30,10 @@ class Simulator:
 
     def pad_path(self):
         max_length = max(len(path) for path in self.padded_path.values())
-        for id, path in self.padded_path:
+        for id, path in self.padded_path.items():
             if len(path) < max_length:
                 path += [path[-1]]*(max_length-len(path))
+
 
     def draw_rect(self, pts_arr: np.ndarray) -> None:
         for pts in pts_arr:
@@ -45,9 +46,9 @@ class Simulator:
             else:
                 cv2.circle(frame, (int(x), int(y)), 1, (0, 255, 0))
 
-    def draw_path(self, frame, rx, ry):
+    def draw_path(self, frame, xys):
         # cv2.polylines(frame, np.int32([list(zip(self.rx, self.ry))]), False, (0, 255, 0), thickness=3)
-        for x, y in zip(rx, ry):
+        for x, y in xys:
             cv2.circle(frame, (int(x), int(y)), 4, (255, 0, 0))
 
     '''
@@ -56,21 +57,25 @@ class Simulator:
     def start(self):
         cv2.namedWindow('frame', cv2.WINDOW_NORMAL)
         cv2.resizeWindow('frame', (1280, 720))
-        for d in self.padded_path:
-            frame = copy.deepcopy(self.frame_obst)
-            for id, xy in d.items():
-                x, y = xy[0], xy[1]
-                cv2.circle(frame, (x, y), ROBOT_RADIUS, ((id==1)*255, (id==2)*255, (id==3)*255))
-            cv2.imshow('frame', frame)
-            k = cv2.waitKey(100) & 0xFF  # '& 0xFF' for 64-bit compatibility
-            if k == ord('q'):
-                break
-        cv2.destroyAllWindows()
+        try:
+            i = 0
+            while True:
+                frame = copy.deepcopy(self.frame_obst)
+                for id in self.padded_path:
+                    cv2.circle(frame, self.padded_path[id][i], ROBOT_RADIUS, ((id==1)*255, (id==2)*255, (id==3)*255))
+                cv2.imshow('frame', frame)
+                k = cv2.waitKey(100) & 0xFF  # '& 0xFF' for 64-bit compatibility
+                if k == ord('q'):
+                    break
+                i += 1
+        except Exception:
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
 
     def show(self):
         frame = copy.deepcopy(self.frame_obst)
         for xys in self.multi_planner.naive_path.values():
-            self.draw_path(frame, xys[0], xys[1])
+            self.draw_path(frame, xys)
         cv2.imshow('frame', frame)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
@@ -81,20 +86,20 @@ if __name__ == '__main__':
     testStart = {
         1: (331, 165),
         2: (1530, 565),
-        3: (315, 951)
+        # 3: (315, 951)
     }
 
     testGoal = {
         1: (955, 819),
         2: (337, 565),
-        3: (1530, 565)
+        # 3: (1530, 565)
     }
     t1 = time.time()
     r = Simulator('room0', testStart, testGoal)  # Load saved room and obstacles
     t2 = time.time()
     print(t2-t1)
-    # r.start()
-    r.show()
+    r.start()
+    # r.show()
     t3 = time.time()
     print(t3-t2)
 

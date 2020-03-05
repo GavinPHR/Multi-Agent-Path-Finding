@@ -1,14 +1,14 @@
 from single_agent_planner import AStarPlanner
-import scheduler
+from scheduler import Scheduler
 from config import GRID_SIZE, ROBOT_RADIUS
-from typing import List, Tuple, Dict
+from typing import Tuple, Dict
 
 class MultiAStar:
 
 	def __init__(self):
 		# Initialize a single agent planner. Obstacles should already be serialized.
 		self.single_planner = AStarPlanner([], [], GRID_SIZE, ROBOT_RADIUS, True)
-		self.naive_path = dict()
+		self.scheduler = Scheduler()
 
 	def naive_plan(self, start: Dict[int, Tuple[int]], goal: Dict[int, Tuple[int]]):
 		try:
@@ -17,10 +17,14 @@ class MultiAStar:
 			print('Some table does not have a start/goal position.')
 			raise
 
+		naive_path = dict()
 		for id in start.keys():
 			sx, sy, gx, gy = start[id][0], start[id][1], goal[id][0], goal[id][1]
-			self.naive_path[id] = self.single_planner.planning(sx, sy, gx, gy)
+			naive_path[id] = self.single_planner.planning(sx, sy, gx, gy)
+		return naive_path
 
+	def planning(self, start, goal):
+		return self.scheduler.schedule(self.naive_plan(start, goal))
 
 testStart = {
 	1: (331, 165),
@@ -34,7 +38,8 @@ testGoal = {
 	3: (1530, 565)
 }
 
-p = MultiAStar()
-p.naive_plan(testStart, testGoal)
-print(p.naive_path)
+if __name__ == '__main__':
+	p = MultiAStar()
+	p.naive_plan(testStart, testGoal)
+	print(p.naive_path)
 
