@@ -4,7 +4,7 @@ Author: Haoran Peng
 Email: gavinsweden@gmail.com
 '''
 from typing import List, Tuple
-
+from .agent import Agent
 
 # Currently greedily choosing closest distance
 def greedy_assign(starts: List[Tuple[int, int]], goals: List[Tuple[int, int]]):
@@ -13,7 +13,7 @@ def greedy_assign(starts: List[Tuple[int, int]], goals: List[Tuple[int, int]]):
 
     goal_set = set(goal for goal in goals)
     sqdist = lambda x, y: (x[0]-y[0])**2 + (x[1]-y[1])**2
-    new_goals = []
+    agents = []
     for start in starts:
         closest = float('inf')
         closest_goal = None
@@ -23,8 +23,8 @@ def greedy_assign(starts: List[Tuple[int, int]], goals: List[Tuple[int, int]]):
                 closest = d
                 closest_goal = goal
         goal_set.remove(closest_goal)
-        new_goals.append(closest_goal)
-    return new_goals
+        agents.append(Agent(start, closest_goal))
+    return agents
 
 
 
