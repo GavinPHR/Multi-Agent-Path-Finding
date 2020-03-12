@@ -5,11 +5,13 @@ Email: gavinsweden@gmail.com
 '''
 from typing import Dict
 import numpy as np
+
 from .agent import Agent
+from .constraints import Constraints
 
 class CTNode:
 
-    def __init__(self, constraints: Dict[Agent, np.ndarray],
+    def __init__(self, constraints: Constraints,
                        solution: Dict[Agent, np.ndarray]):
 
         self.constraints = constraints

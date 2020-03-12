@@ -4,6 +4,7 @@ Author: Haoran Peng
 Email: gavinsweden@gmail.com
 '''
 from typing import List, Tuple
+
 from .agent import Agent
 
 # Currently greedily choosing closest distance
