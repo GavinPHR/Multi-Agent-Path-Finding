@@ -39,7 +39,7 @@ class Planner:
                    goals: List[Tuple[int, int]],
                    assign:Callable = greedy_assign,
                    max_iter:int = 200,
-                   low_level_max_iter = 500,
+                   low_level_max_iter:int = 500,
                    debug:bool = False) -> np.ndarray:
 
         # Do goal assignment
