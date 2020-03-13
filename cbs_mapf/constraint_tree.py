@@ -26,3 +26,6 @@ class CTNode:
     def __lt__(self, other):
         return self.cost < other.cost
 
+    def __str__(self):
+        return str(self.constraints.agent_constraints)
+

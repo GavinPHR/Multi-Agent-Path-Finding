@@ -3,7 +3,7 @@
 Author: Haoran Peng
 Email: gavinsweden@gmail.com
 '''
-from typing import Dict, List, Tuple
+from typing import Dict, Tuple, Set
 from copy import deepcopy
 
 from .agent import Agent
@@ -15,18 +15,17 @@ class Constraints:
 
     def __init__(self):
         #                                   time,         obstacles
-        self.agent_constraints: Dict[Agent: Dict[int, List[Tuple[int, int]]]] = dict()
+        self.agent_constraints: Dict[Agent: Dict[int, Set[Tuple[int, int]]]] = dict()
 
     '''
     Deepcopy self with additional constraints
     '''
-    def fork(self, agent: Agent, dynamic_obstacles: Dict[int, List[Tuple[int, int]]]) -> 'Constraints':
-        constraints_copy = deepcopy(self.agent_constraints)
-        agent_obstacles = constraints_copy.setdefault(agent, dict())
-        for time, obstacles in dynamic_obstacles:
-            agent_obstacles.setdefault(time, []).extend(obstacles)
+    def fork(self, agent: Agent, obstacle: Tuple[int, int], start: int, end: int) -> 'Constraints':
+        agent_constraints_copy = deepcopy(self.agent_constraints)
+        for time in range(start, end):
+            agent_constraints_copy.setdefault(agent, dict()).setdefault(time, set()).add(obstacle)
         new_constraints = Constraints()
-        new_constraints.agent_constraints = constraints_copy
+        new_constraints.agent_constraints = agent_constraints_copy
         return new_constraints
 
     def setdefault(self, key, default):
@@ -38,5 +37,8 @@ class Constraints:
     def __iter__(self):
         for key in self.agent_constraints:
             yield key
+
+    def __str__(self):
+        return str(self.agent_constraints)
 
 
