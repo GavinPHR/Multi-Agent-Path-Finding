@@ -61,7 +61,44 @@ The individual path for each agent is padded to the same length `L`.
 
 ## Theoretical Background
 
-The high-level conflict-based search (CBS) is based on the paper [[Sharon et al. 2012]](https://www.aaai.org/ocs/index.php/AAAI/AAAI12/paper/viewFile/5062/5239). The low-level space-time A* (STA*) is like normal A* with an additional time dimension, [here](http://www0.cs.ucl.ac.uk/staff/D.Silver/web/Applications_files/coop-path-AIWisdom.pdf) is some information about it. 
+The high-level conflict-based search (CBS) is based on the paper [[Sharon et al. 2012]](https://www.aaai.org/ocs/index.php/AAAI/AAAI12/paper/viewFile/5062/5239). The low-level space-time A\* (STA\*) is like normal A\* with an additional time dimension, see the [GitHub page](https://github.com/GavinPHR/Space-Time-AStar) for more information. 
+
+### Constraint Tree
+
+The core of the algorithm is the maintenance of a constraint tree (a binary min-heap in my implementation). The nodes in the constraint tree have 3 component:
+
+- constraints - detailing what each agent should avoid in space-time
+- solution - path for each agent
+- cost - the sum of the cost of individual paths
+
+The low-level STA* planner can take the constraints for an agent and calculate a collison-free path for that agent.
+
+### Pseudocode 
+
+Taken from [[Sharon et al. 2012]](https://www.aaai.org/ocs/index.php/AAAI/AAAI12/paper/viewFile/5062/5239) with minor modification.
+
+```
+node = Find paths for individual agents with no constraints.
+Add node to the constraint tree.
+
+while constraint tree is not empty:
+  best = node with the lowest cost in the constraint tree
+
+  Validate the solution in best until a conflict occurs.
+  if there is no conflict:
+    return best
+
+  conflict = Find the first 2 agents with conflicting paths.
+
+  new_node1 = node where the 1st agent avoid the 2nd agent
+  Add new_node1 to the constraint tree.
+
+  new_node2 = node where the 2nd agent avoid the 1st agent
+  Add new_node2 to the constraint tree.
+```
+
+
+
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
