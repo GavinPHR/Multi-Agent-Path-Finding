@@ -1,6 +1,12 @@
 # Multi-Agent Path Finding
 
-Anonymous Multi-Agent Path Finding (MAPF) with Conflict-Based Search (CBS) and Space-Time A* (STA*). This package does not assume that an agent can fit into a grid.
+Anonymous Multi-Agent Path Finding (MAPF) with Conflict-Based Search (CBS) and Space-Time A* (STA*). 
+
+## Illustration
+
+4 agents at the 4 corners of the map trying to align themselves in the middle:
+
+![](./fig/mapf_illustration.gif)
 
 ## Installation
 
@@ -37,7 +43,7 @@ plan(starts: List[Tuple[int, int]],
      goals: List[Tuple[int, int]],
      assign:Callable = greedy_assign,
      max_iter:int = 200,
-     low_level_max_iter = 500,
+     low_level_max_iter:int = 500,
      debug:bool = False) -> np.ndarray
 ```
 #### Parameters:
