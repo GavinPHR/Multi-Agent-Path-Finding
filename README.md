@@ -6,7 +6,9 @@ Anonymous Multi-Agent Path Finding (MAPF) with Conflict-Based Search (CBS) and S
 
 4 agents at the 4 corners of the map trying to align themselves in the middle:
 
-![](./fig/mapf_illustration.gif)
+<p align="center">
+  <img width="500" src="./fig/mapf_illustration.gif">
+</p>
 
 ## Installation
 
