@@ -1,6 +1,6 @@
 # Multi-Agent Path Finding
 
-Anonymous Multi-Agent Path Finding (MAPF) with Conflict-Based Search (CBS) and Space-Time A* (STA*). 
+Anonymous Multi-Agent Path Finding (MAPF) with Conflict-Based Search (CBS) and Space-Time A* (STA*). I strongly recommend you to also check out my [Space-Time A*](https://github.com/GavinPHR/Space-Time-AStar) repository for a complete picture of how this package works.
 
 ## Illustration
 
