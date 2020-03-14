@@ -1,4 +1,4 @@
-# Multi-Agent Path Finding
+# Multi-Agent Path Finding ![](https://img.shields.io/pypi/v/cbs-mapf) ![](https://img.shields.io/badge/python-%3E%3D3.5-blue) ![](https://img.shields.io/github/license/GavinPHR/Multi-Agent-Path-Finding) 
 
 Anonymous Multi-Agent Path Finding (MAPF) with Conflict-Based Search (CBS) and Space-Time A* (STA*). I strongly recommend you to also check out my [Space-Time A*](https://github.com/GavinPHR/Space-Time-AStar) repository for a complete picture of how this package works.
 
