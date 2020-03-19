@@ -7,7 +7,7 @@ with open("README.md", "r") as fh:
 setuptools.setup(
   name = 'cbs-mapf',         # How you named your package folder (MyLib)
   packages=setuptools.find_packages(),
-  version = '0.2',      # Start with a small number and increase it with every change you make
+  version = '0.3',      # Start with a small number and increase it with every change you make
   license='MIT',        # Chose a license from here: https://help.github.com/articles/licensing-a-repository
   description = 'Anonymous Multi-Agent Path Finding with Conflict-Based Search and Space-Time A*',   # Give a short description about your library
   author = 'Haoran Peng',                   # Type in your name
@@ -20,7 +20,7 @@ setuptools.setup(
           'space-time-astar'
       ],
   classifiers=[
-    'Development Status :: 3 - Alpha',      # Chose either "3 - Alpha", "4 - Beta" or "5 - Production/Stable" as the current state of your package
+    'Development Status :: 4 - Beta',      # Chose either "3 - Alpha", "4 - Beta" or "5 - Production/Stable" as the current state of your package
     'Intended Audience :: Developers',      # Define that your audience are developers
     'Topic :: Software Development :: Build Tools',
     'License :: OSI Approved :: MIT License',   # Again, pick a license

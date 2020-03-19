@@ -6,7 +6,7 @@ Email: gavinsweden@gmail.com
 An implementation of multi-agent path finding using conflict-based search
 [Sharon et al., 2015]
 '''
-from typing import List, Tuple, Dict, Callable
+from typing import List, Tuple, Dict, Callable, Set
 from heapq import heappush, heappop
 from itertools import combinations
 from copy import deepcopy
@@ -41,6 +41,8 @@ class Planner:
                    max_iter:int = 200,
                    low_level_max_iter:int = 500,
                    debug:bool = False) -> np.ndarray:
+        self.low_level_max_iter = low_level_max_iter
+        self.debug = debug
 
         # Do goal assignment
         agents = assign(starts, goals)
@@ -48,12 +50,12 @@ class Planner:
         constraints = Constraints()
 
         # Compute path for each agent using low level planner
-        solution = dict((agent, self.calculate_path(agent, constraints)) for agent in agents)
+        solution = dict((agent, self.calculate_path(agent, constraints, dict())) for agent in agents)
         if any(len(path) == 0 for path in solution.values()):
             open = []
         else:
             # Make root node
-            node = CTNode(constraints, self.pad(solution))
+            node = CTNode(constraints, solution)
             # Min heap for quick extraction
             open = [node]
 
@@ -68,16 +70,20 @@ class Planner:
             if agent_i is None:
                 if debug:
                     print('CBS_MAPF: Paths found after {0} iterations'.format(iter_))
+                print(best.constraints)
                 return self.reformat(agents, best.solution)
 
             # Calculate new constraints
             agent_i_constraint = self.calculate_constraints(best, agent_i, agent_j, time_of_conflict)
             agent_j_constraint = self.calculate_constraints(best, agent_j, agent_i, time_of_conflict)
-            # print(agent_i_constraint)
-            # print(agent_j_constraint)
+
             # Calculate new paths
-            agent_i_path = self.calculate_path(agent_i, agent_i_constraint, low_level_max_iter, debug)
-            agent_j_path = self.calculate_path(agent_j, agent_j_constraint, low_level_max_iter, debug)
+            agent_i_path = self.calculate_path(agent_i,
+                                               agent_i_constraint,
+                                               self.calculate_goal_times(best, agent_i, agents))
+            agent_j_path = self.calculate_path(agent_j,
+                                               agent_j_constraint,
+                                               self.calculate_goal_times(best, agent_j, agents))
 
             # Replace old paths with new ones in solution
             solution_i = best.solution
@@ -88,13 +94,13 @@ class Planner:
             if any(len(path) == 0 for path in solution_i.values()):
                 pass
             else:
-                node_i = CTNode(agent_i_constraint, self.pad(solution_i))
+                node_i = CTNode(agent_i_constraint, solution_i)
                 heappush(open, node_i)
 
             if any(len(path) == 0 for path in solution_j.values()):
                 pass
             else:
-                node_j = CTNode(agent_j_constraint, self.pad(solution_j))
+                node_j = CTNode(agent_j_constraint, solution_j)
                 heappush(open, node_j)
 
         if debug:
@@ -142,12 +148,39 @@ class Planner:
             pass
         return node.constraints.fork(constrained_agent, tuple(pivot.tolist()), time_of_conflict, conflict_end_time)
 
+    def calculate_goal_times(self, node: CTNode, agent: Agent, agents: List[Agent]):
+        solution = node.solution
+        goal_times = dict()
+        for other_agent in agents:
+            if other_agent == agent:
+                continue
+            time = len(solution[other_agent]) - 1
+            goal_times.setdefault(time, set()).add(tuple(solution[other_agent][time]))
+        return goal_times
 
     '''
     Calculate the paths for all agents with space-time constraints
     '''
-    def calculate_path(self, agent: Agent, constraints: Constraints, max_iter=500, debug=False) -> np.ndarray:
-        return self.st_planner.plan(agent.start, agent.goal, constraints.setdefault(agent, dict()), max_iter, debug)
+    def calculate_path(self, agent: Agent, 
+                       constraints: Constraints, 
+                       goal_times: Dict[int, Set[Tuple[int, int]]]) -> np.ndarray:
+        return self.st_planner.plan(agent.start, 
+                                    agent.goal, 
+                                    constraints.setdefault(agent, dict()), 
+                                    semi_dynamic_obstacles=goal_times,
+                                    max_iter=self.low_level_max_iter, 
+                                    debug=self.debug)
+
+    '''
+    Reformat the solution to a numpy array
+    '''
+    @staticmethod
+    def reformat(agents: List[Agent], solution: Dict[Agent, np.ndarray]):
+        solution = Planner.pad(solution)
+        reformatted_solution = []
+        for agent in agents:
+            reformatted_solution.append(solution[agent])
+        return np.array(reformatted_solution)
 
     '''
     Pad paths to equal length, inefficient but well..
@@ -161,15 +194,4 @@ class Planner:
             padded = np.concatenate([path, np.array(list([path[-1]])*(max_-len(path)))])
             solution[agent] = padded
         return solution
-
-
-    '''
-    Reformat the solution to a numpy array
-    '''
-    @staticmethod
-    def reformat(agents, solution):
-        reformatted_solution = []
-        for agent in agents:
-            reformatted_solution.append(solution[agent])
-        return np.array(reformatted_solution)
 
