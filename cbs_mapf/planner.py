@@ -7,6 +7,7 @@ An implementation of multi-agent path finding using conflict-based search
 [Sharon et al., 2015]
 '''
 from typing import List, Tuple, Dict, Callable, Set
+import multiprocessing as mp
 from heapq import heappush, heappop
 from itertools import combinations
 from copy import deepcopy
@@ -39,73 +40,99 @@ class Planner:
                    goals: List[Tuple[int, int]],
                    assign:Callable = greedy_assign,
                    max_iter:int = 200,
-                   low_level_max_iter:int = 500,
+                   low_level_max_iter:int = 100,
+                   max_process:int = 10,
                    debug:bool = False) -> np.ndarray:
+
         self.low_level_max_iter = low_level_max_iter
         self.debug = debug
 
         # Do goal assignment
-        agents = assign(starts, goals)
+        self.agents = assign(starts, goals)
 
         constraints = Constraints()
 
         # Compute path for each agent using low level planner
-        solution = dict((agent, self.calculate_path(agent, constraints, dict())) for agent in agents)
-        if any(len(path) == 0 for path in solution.values()):
-            open = []
-        else:
+        solution = dict((agent, self.calculate_path(agent, constraints, dict())) for agent in self.agents)
+
+        open = []
+        if all(len(path) != 0 for path in solution.values()):
             # Make root node
             node = CTNode(constraints, solution)
             # Min heap for quick extraction
-            open = [node]
+            open.append(node)
 
+        manager = mp.Manager()
         iter_ = 0
         while open and iter_ < max_iter:
             iter_ += 1
-            best: CTNode = heappop(open)
-            # print(best)
-            agent_i, agent_j, time_of_conflict = self.validate_paths(agents, best)
 
-            # If there is not conflict, validate_paths returns (None, None, -1)
-            if agent_i is None:
-                if debug:
-                    print('CBS_MAPF: Paths found after {0} iterations'.format(iter_))
-                print(best.constraints)
-                return self.reformat(agents, best.solution)
+            results = manager.list([])
 
-            # Calculate new constraints
-            agent_i_constraint = self.calculate_constraints(best, agent_i, agent_j, time_of_conflict)
-            agent_j_constraint = self.calculate_constraints(best, agent_j, agent_i, time_of_conflict)
+            processes = []
 
-            # Calculate new paths
-            agent_i_path = self.calculate_path(agent_i,
-                                               agent_i_constraint,
-                                               self.calculate_goal_times(best, agent_i, agents))
-            agent_j_path = self.calculate_path(agent_j,
-                                               agent_j_constraint,
-                                               self.calculate_goal_times(best, agent_j, agents))
+            # Default to 10 processes maximum
+            for _ in range(max_process if len(open) > max_process else len(open)):
+                p = mp.Process(target=self.search_node, args=[heappop(open), results])
+                processes.append(p)
+                p.start()
 
-            # Replace old paths with new ones in solution
-            solution_i = best.solution
-            solution_j = deepcopy(best.solution)
-            solution_i[agent_i] = agent_i_path
-            solution_j[agent_j] = agent_j_path
+            for p in processes:
+                p.join()
 
-            if any(len(path) == 0 for path in solution_i.values()):
-                pass
-            else:
-                node_i = CTNode(agent_i_constraint, solution_i)
-                heappush(open, node_i)
-
-            if any(len(path) == 0 for path in solution_j.values()):
-                pass
-            else:
-                node_j = CTNode(agent_j_constraint, solution_j)
-                heappush(open, node_j)
+            for result in results:
+                if len(result) == 1:
+                    if debug:
+                        print('CBS_MAPF: Paths found after about {0} iterations'.format(4 * iter_))
+                    return result[0]
+                if result[0]:
+                    heappush(open, result[0])
+                if result[1]:
+                    heappush(open, result[1])
 
         if debug:
             print('CBS-MAPF: Open set is empty, no paths found.')
         return np.array([])
+
+    '''
+    Abstracted away the cbs search for multiprocessing.
+    The parameters open and results MUST BE of type ListProxy to ensure synchronization.
+    '''
+    def search_node(self, best: CTNode, results):
+        agent_i, agent_j, time_of_conflict = self.validate_paths(self.agents, best)
+
+        # If there is not conflict, validate_paths returns (None, None, -1)
+        if agent_i is None:
+            results.append((self.reformat(self.agents, best.solution),))
+            return
+        # Calculate new constraints
+        agent_i_constraint = self.calculate_constraints(best, agent_i, agent_j, time_of_conflict)
+        agent_j_constraint = self.calculate_constraints(best, agent_j, agent_i, time_of_conflict)
+
+        # Calculate new paths
+        agent_i_path = self.calculate_path(agent_i,
+                                           agent_i_constraint,
+                                           self.calculate_goal_times(best, agent_i, self.agents))
+        agent_j_path = self.calculate_path(agent_j,
+                                           agent_j_constraint,
+                                           self.calculate_goal_times(best, agent_j, self.agents))
+
+        # Replace old paths with new ones in solution
+        solution_i = best.solution
+        solution_j = deepcopy(best.solution)
+        solution_i[agent_i] = agent_i_path
+        solution_j[agent_j] = agent_j_path
+
+        node_i = None
+        if all(len(path) != 0 for path in solution_i.values()):
+            node_i = CTNode(agent_i_constraint, solution_i)
+
+        node_j = None
+        if all(len(path) != 0 for path in solution_j.values()):
+            node_j = CTNode(agent_j_constraint, solution_j)
+
+        results.append((node_i, node_j))
+
 
     '''
     Pair of agent, point of conflict

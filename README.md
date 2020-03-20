@@ -45,15 +45,17 @@ plan(starts: List[Tuple[int, int]],
      goals: List[Tuple[int, int]],
      assign:Callable = greedy_assign,
      max_iter:int = 200,
-     low_level_max_iter:int = 500,
+     low_level_max_iter:int = 100,
+     max_process:int = 10,
      debug:bool = False) -> np.ndarray
 ```
 #### Parameters:
 - **starts**: List[Tuple[int, int]] - A list of start coordinates.
 - **goals**: List[Tuple[int, int]] - A list of goal coordinates.
-- **assign**:Callable, *optional* - A function that assign each start coordinate to a goal coordinate. The default is to assign greedily each start coordinate to the closest goal coordinate.
+- **assign**: Callable, *optional* - A function that assign each start coordinate to a goal coordinate. The default is to assign greedily each start coordinate to the closest goal coordinate.
 - **max_iter**: int, *optional* - Max iterations of the high-level CBS algorithm. Default to `200`. 
-- **low_level_max_iter**: int, *optional* - Max iterations of the low-level STA* algorithm. Default to `500`.
+- **low_level_max_iter**: int, *optional* - Max iterations of the low-level STA* algorithm. Default to `100`.
+- **max_process**: int, *optional* - Maximum number of processes to spawn. Default to `10`.
 - **debug**: bool, *optional* - Prints some debug message. Default to `False`.
 
 The size of **starts** and **goals** must be equal. 
