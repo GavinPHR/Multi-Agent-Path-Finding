@@ -53,7 +53,7 @@ class Planner:
         constraints = Constraints()
 
         # Compute path for each agent using low level planner
-        solution = dict((agent, self.calculate_path(agent, constraints, dict())) for agent in self.agents)
+        solution = dict((agent, self.calculate_path(agent, constraints, None)) for agent in self.agents)
 
         open = []
         if all(len(path) != 0 for path in solution.values()):
