@@ -7,7 +7,7 @@ Anonymous Multi-Agent Path Finding (MAPF) with Conflict-Based Search (CBS) and S
  - [Usage](#usage)
  - [Theoretical Background](#theoretical-background)
  - [Contributing](#contributing)
- - [License] (#license)
+ - [License](#license)
 
 ## Visualization 
 
