@@ -2,13 +2,33 @@
 
 Anonymous Multi-Agent Path Finding (MAPF) with Conflict-Based Search (CBS) and Space-Time A* (STA*). I strongly recommend you to also check out my [Space-Time A*](https://github.com/GavinPHR/Space-Time-AStar) repository for a complete picture of how this package works.
 
-## Illustration
+ - [Visualization](#visualization)
+ - [Installation](#installation)
+ - [Usage](#usage)
+ - [Theoretical Background](#theoreticalbackground)
+ - [Contributing](#contributing)
+ - [License] (#License)
+
+## Visualization 
 
 4 agents at the 4 corners of the map trying to align themselves in the middle:
 
 <p align="center">
-  <img width="500" src="./fig/mapf_illustration.gif">
+  <img width="500" src="https://raw.githubusercontent.com/GavinPHR/Multi-Agent-Path-Finding/master/fig/visualization1.gif">
 </p>
+
+16 agents in a circlular layout trying to form a grid layout:
+
+<p align="center">
+  <img width="600" src="https://raw.githubusercontent.com/GavinPHR/Multi-Agent-Path-Finding/master/fig/visualization2.gif">
+</p>
+
+The above visualizations are generated using `visualizer.py` and scenario yaml files in the [visualization folder](https://github.com/GavinPHR/Multi-Agent-Path-Finding/tree/master/visualization). Once the package is installed, you can generate them like so:
+
+```bash
+python3 visualizer.py scenario1.yaml
+python3 visualizer.py scenario2.yaml
+```
 
 ## Installation
 
@@ -108,10 +128,8 @@ while constraint tree is not empty:
 ```
 
 
-
-
 ## Contributing
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+Suggestions and pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 
 ## License
