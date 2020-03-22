@@ -23,7 +23,7 @@ Anonymous Multi-Agent Path Finding (MAPF) with Conflict-Based Search (CBS) and S
   <img width="600" src="https://raw.githubusercontent.com/GavinPHR/Multi-Agent-Path-Finding/master/fig/visualization2.gif">
 </p>
 
-The above visualizations are generated using `visualizer.py` and scenario yaml files in the [visualization folder](https://github.com/GavinPHR/Multi-Agent-Path-Finding/tree/master/visualization). Once the package is installed, you can generate them like so:
+The above visualizations are generated using `visualizer.py` and scenario yaml files in the [visualization folder](https://github.com/GavinPHR/Multi-Agent-Path-Finding/tree/master/visualization). Once the package (and other [requirements](https://github.com/GavinPHR/Multi-Agent-Path-Finding/blob/master/visualization/requirements.txt)) is installed, you can generate them like so:
 
 ```bash
 python3 visualizer.py scenario1.yaml
