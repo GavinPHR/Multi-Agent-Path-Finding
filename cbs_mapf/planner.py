@@ -20,9 +20,7 @@ from stastar.planner import Planner as STPlanner
 from .constraint_tree import CTNode
 from .constraints import Constraints
 from .agent import Agent
-from .assigner import greedy_assign
-import time
-
+from .assigner import *
 class Planner:
 
     def __init__(self, grid_size: int,
@@ -38,7 +36,7 @@ class Planner:
     '''
     def plan(self, starts: List[Tuple[int, int]],
                    goals: List[Tuple[int, int]],
-                   assign:Callable = greedy_assign,
+                   assign:Callable = min_cost,
                    max_iter:int = 200,
                    low_level_max_iter:int = 100,
                    max_process:int = 10,

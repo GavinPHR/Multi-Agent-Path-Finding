@@ -7,7 +7,7 @@ with open("README.md", "r") as fh:
 setuptools.setup(
   name = 'cbs-mapf',         # How you named your package folder (MyLib)
   packages=setuptools.find_packages(),
-  version = '0.4',      # Start with a small number and increase it with every change you make
+  version = '0.5',      # Start with a small number and increase it with every change you make
   license='MIT',        # Chose a license from here: https://help.github.com/articles/licensing-a-repository
   description = 'Anonymous Multi-Agent Path Finding with Conflict-Based Search and Space-Time A*',   # Give a short description about your library
   author = 'Haoran Peng',                   # Type in your name

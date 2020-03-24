@@ -72,7 +72,7 @@ plan(starts: List[Tuple[int, int]],
 #### Parameters:
 - **starts**: List[Tuple[int, int]] - A list of start coordinates.
 - **goals**: List[Tuple[int, int]] - A list of goal coordinates.
-- **assign**: Callable, *optional* - A function that assign each start coordinate to a goal coordinate. The default is to assign greedily each start coordinate to the closest goal coordinate.
+- **assign**: Callable, *optional* - A function that assign each start coordinate to a goal coordinate. The default assignment yields a minimum cost with repesct to straight line euclidean distances, see [Hungarian Algorithm](https://en.wikipedia.org/wiki/Hungarian_algorithm).
 - **max_iter**: int, *optional* - Max iterations of the high-level CBS algorithm. Default to `200`. 
 - **low_level_max_iter**: int, *optional* - Max iterations of the low-level STA* algorithm. Default to `100`.
 - **max_process**: int, *optional* - Maximum number of processes to spawn. Default to `10`.
