@@ -63,7 +63,7 @@ Use `Planner`'s `plan()` method:
 ```
 plan(starts: List[Tuple[int, int]],
      goals: List[Tuple[int, int]],
-     assign:Callable = greedy_assign,
+     assign:Callable = min_cost,
      max_iter:int = 200,
      low_level_max_iter:int = 100,
      max_process:int = 10,
